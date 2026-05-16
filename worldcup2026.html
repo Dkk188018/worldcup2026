@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 美加墨世界杯 · 赛事中心</title>
+<style>
+/* ============================================================
+   变量 & 全局重置
+   ============================================================ */
+:root {
+  --bg:        #f8fafc;
+  --white:     #ffffff;
+  --gold:      #b8860b;
+  --gold-l:    #d4af37;
+  --dark:      #1e293b;
+  --gray:      #64748b;
+  --gray-l:    #e2e8f0;
+  --blue:      #1a56db;
+  --blue-l:    #e8f0fe;
+  --green:     #1a8a3f;
+  --red:       #dc2626;
+  --sh:        0 1px 3px rgba(0,0,0,.06);
+  --sh-md:     0 4px 12px rgba(0,0,0,.08);
+  --sh-lg:     0 12px 32px rgba(0,0,0,.12);
+  --radius:    12px;
+  --max-w:     1320px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  line-height:1.6;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ============================================================
+   背景装饰系统 — 纯 CSS + emoji，零图片依赖
+   ============================================================ */
+
+/* 绿茵草皮纹理 */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    /* 草坪横纹 */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 78px,
+      rgba(34,139,34,.03) 78px,
+      rgba(34,139,34,.03) 80px
+    ),
+    /* 草坪竖纹 */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 120px,
+      rgba(34,139,34,.02) 120px,
+      rgba(34,139,34,.02) 122px
+    ),
+    /* 金色光斑 */
+    radial-gradient(ellipse at 15% 25%, rgba(184,134,11,.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 60%, rgba(184,134,11,.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 10%, rgba(26,138,63,.05) 0%, transparent 45%);
+}
+
+/* 大力神杯 左上 */
+body::after{
+  content:"🏆";
+  position:fixed;left:30px;top:100px;z-index:0;pointer-events:none;
+  font-size:140px;opacity:.08;
+  transform:rotate(-15deg);
+  filter:drop-shadow(0 0 30px rgba(184,134,11,.15));
+}
+
+/* C罗 右上 */
+.cr7-deco{
+  position:fixed;right:40px;top:80px;z-index:0;pointer-events:none;
+  font-size:140px;opacity:.09;line-height:1;
+}
+/* 梅西 右上偏中 */
+.messi-deco{
+  position:fixed;right:80px;top:280px;z-index:0;pointer-events:none;
+  font-size:110px;opacity:.07;line-height:1;
+}
+/* 姆巴佩 左下 */
+.mbp-deco{
+  position:fixed;left:50px;bottom:50px;z-index:0;pointer-events:none;
+  font-size:130px;opacity:.09;line-height:1;
+}
+/* 足球 右下 */
+.ball-deco{
+  position:fixed;right:80px;bottom:120px;z-index:0;pointer-events:none;
+  font-size:90px;opacity:.08;line-height:1;
+}
+/* 中场足球 */
+.ball2-deco{
+  position:fixed;left:50%;top:45%;z-index:0;pointer-events:none;
+  transform:translate(-50%,-50%);
+  font-size:200px;opacity:.03;line-height:1;
+}
+/* 星星装饰 */
+.stars-deco{
+  position:fixed;right:30px;top:50%;z-index:0;pointer-events:none;
+  font-size:60px;opacity:.06;line-height:1.4;
+  transform:translateY(-50%);
+}
+/* 底部奖杯 */
+.trophy2-deco{
+  position:fixed;left:50%;bottom:-10px;z-index:0;pointer-events:none;
+  transform:translateX(-50%);
+  font-size:200px;opacity:.03;line-height:1;
+}
+
+/* ===== 导航栏 ===== */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--gray-l);box-shadow:var(--sh);
+}
+.hdr{max-width:var(--max-w);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--dark)}
+.logo-i{
+  width:40px;height:40px;background:linear-gradient(135deg,var(--green),#0f6b2b);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 0 12px rgba(26,138,63,.25);
+}
+.logo-t{font-size:18px;font-weight:700;letter-spacing:.5px}
+.logo-t span{color:var(--blue)}
+nav{display:flex;gap:24px}
+nav a{text-decoration:none;color:var(--gray);font-size:14px;font-weight:500;transition:color .2s;padding:6px 0;border-bottom:2px solid transparent}
+nav a:hover{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* ===== 主容器 ===== */
+.ctr{max-width:var(--max-w);margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* ===== 英雄区 ===== */
+.hero{text-align:center;padding:56px 20px 40px;position:relative}
+.hero-trophy{
+  font-size:80px;margin-bottom:8px;
+  filter:drop-shadow(0 4px 20px rgba(184,134,11,.5));
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-badge{
+  display:inline-block;background:var(--blue-l);color:var(--blue);
+  font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;
+}
+.hero h1{font-size:clamp(30px,5vw,48px);font-weight:800;color:#0f172a;letter-spacing:-1px;line-height:1.15}
+.hero h1 .gold{color:var(--gold)}
+.hero p{color:var(--gray);font-size:17px;margin-top:8px;max-width:540px;margin-inline:auto}
+.hero-opener{
+  display:inline-flex;align-items:center;gap:16px;
+  margin-top:20px;padding:12px 24px;
+  background:var(--white);border:2px solid var(--gold-l);border-radius:40px;
+  font-size:14px;font-weight:600;color:var(--dark);
+  box-shadow:0 2px 12px rgba(184,134,11,.12);
+}
+
+/* ===== 倒计时 ===== */
+.countdown{display:flex;justify-content:center;gap:16px;margin-top:30px;flex-wrap:wrap}
+.cd-item{
+  min-width:95px;padding:18px 20px;text-align:center;border-radius:var(--radius);
+  position:relative;overflow:hidden;
+}
+.cd-item::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.cd-item:nth-child(1){background:#e8f5e9;border:2px solid #a5d6a7}
+.cd-item:nth-child(1)::before{background:linear-gradient(90deg,#1a8a3f,#4caf50)}
+.cd-item:nth-child(2){background:#fff8e1;border:2px solid #ffe082}
+.cd-item:nth-child(2)::before{background:linear-gradient(90deg,#f9a825,#ffca28)}
+.cd-item:nth-child(3){background:#e3f2fd;border:2px solid #90caf9}
+.cd-item:nth-child(3)::before{background:linear-gradient(90deg,#1565c0,#42a5f5)}
+.cd-item:nth-child(4){background:#fce4ec;border:2px solid #f48fb1}
+.cd-item:nth-child(4)::before{background:linear-gradient(90deg,#c62828,#ef5350)}
+.cd-item::after{content:"⚽";position:absolute;bottom:-6px;right:-2px;font-size:22px;opacity:.12}
+.cd-number{font-size:40px;font-weight:800;color:#0f172a;font-variant-numeric:tabular-nums;line-height:1.1}
+.cd-label{font-size:12px;color:var(--gray);margin-top:5px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+/* ===== 赛事速览 ===== */
+.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+.quick-stat{
+  background:var(--white);border:1px solid var(--gray-l);border-radius:var(--radius);
+  padding:20px 16px;text-align:center;box-shadow:var(--sh);
+  position:relative;overflow:hidden;
+}
+.quick-stat::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px}
+.quick-stat:nth-child(1)::after{background:var(--green)}
+.quick-stat:nth-child(2)::after{background:var(--gold)}
+.quick-stat:nth-child(3)::after{background:var(--blue)}
+.quick-stat:nth-child(4)::after{background:var(--red)}
+.quick-stat .qs-num{font-size:30px;font-weight:800;color:#0f172a}
+.quick-stat .qs-lbl{font-size:13px;color:var(--gray);margin-top:4px}
+
+/* ===== 区块标题 ===== */
+.section{margin:48px 0}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.sec-i{width:36px;height:36px;background:var(--blue-l);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sec-t{font-size:21px;font-weight:700;color:#0f172a}
+.sec-sub{color:var(--gray);font-size:13px;margin-left:auto}
+
+/* ===== 小组筛选 ===== */
+.group-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.group-tab{
+  padding:7px 15px;border:1px solid var(--gray-l);background:var(--white);
+  border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;color:var(--gray);
+}
+.group-tab:hover{border-color:var(--blue);color:var(--blue)}
+.group-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ============================================================
+   对阵卡片 — 国旗色背景 + 国旗 emoji 置顶
+   ============================================================ */
+.matches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:16px}
+.match-card{
+  background:var(--white);border:1px solid var(--gray-l);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--sh);transition:transform .2s,box-shadow .2s;
+  display:flex;flex-direction:column;
+}
+.match-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.match-card.hidden{display:none}
+
+/* 顶部国旗色条（6色: A队3色 → B队3色） */
+.match-card-bar{height:6px}
+.match-card-body{padding:18px 20px;flex:1;display:flex;flex-direction:column}
+.match-group-badge{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;
+  color:#fff;padding:3px 10px;border-radius:3px;margin-bottom:16px;
+  align-self:flex-start;
+}
+
+/* 对阵双方行 */
+.match-teams-row{display:flex;align-items:stretch;gap:0;margin-bottom:16px}
+
+/* 球队盒子 — 国旗色背景（高饱和度） */
+.match-team-box{
+  flex:1;text-align:center;padding:18px 12px 16px;
+  border-radius:10px;position:relative;
+}
+.match-flag{font-size:50px;line-height:1.2;position:relative;z-index:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+.match-name{
+  font-size:19px;font-weight:800;margin-top:10px;
+  position:relative;z-index:1;
+  letter-spacing:1px;
+  text-shadow:0 1px 3px rgba(0,0,0,.15);
+  color:#0f172a;
+}
+.match-flag-bar{
+  height:5px;border-radius:2px;margin-top:12px;
+  position:relative;z-index:1;
+}
+.match-vs{
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;color:#94a3b8;
+  padding:0 8px;flex-shrink:0;
+  letter-spacing:1px;
+}
+
+/* 元信息 */
+.match-meta{
+  display:flex;flex-wrap:wrap;gap:8px 16px;padding-top:14px;
+  border-top:1px solid #f1f5f9;font-size:12.5px;color:var(--gray);
+}
+.match-meta-item{display:flex;align-items:center;gap:4px}
+
+/* 按钮 */
+.match-btn{
+  display:block;width:100%;margin-top:14px;padding:10px 0;
+  border:1px solid var(--blue);background:transparent;color:var(--blue);
+  font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;
+  transition:all .2s;
+}
+.match-btn:hover{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(26,86,219,.25);}
+
+/* ===== 搜索栏 ===== */
+.search-bar{
+  display:flex;gap:10px;background:var(--white);
+  border:1px solid var(--gray-l);border-radius:var(--radius);
+  padding:6px;box-shadow:var(--sh);
+}
+.search-bar input{
+  flex:1;border:none;outline:none;font-size:15px;padding:10px 14px;
+  color:var(--dark);background:#f1f5f9;border-radius:7px;min-width:0;
+}
+.search-bar input::placeholder{color:#94a3b8}
+.search-bar select{
+  border:none;outline:none;font-size:13px;padding:10px 12px;
+  color:var(--dark);background:#f1f5f9;border-radius:7px;cursor:pointer;
+}
+.search-bar button{
+  background:var(--blue);color:#fff;border:none;font-size:14px;font-weight:600;
+  padding:10px 20px;border-radius:7px;cursor:pointer;transition:background .2s;white-space:nowrap;
+}
+.search-bar button:hover{background:#1d4ed8}
+.search-clear{background:transparent!important;color:var(--gray)!important;padding:10px!important;font-size:18px!important}
+.result-count{font-size:13px;color:var(--gray);margin-top:12px;display:none}
+.result-count.show{display:block}
+
+/* ===== 模态框 ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);
+  z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--white);border-radius:16px;max-width:620px;width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);position:relative;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;width:34px;height:34px;
+  border-radius:50%;border:none;background:rgba(0,0,0,.45);font-size:16px;
+  cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;z-index:10;
+}
+.modal-close:hover{background:rgba(0,0,0,.65)}
+.modal-stadium-img{width:100%;height:230px;object-fit:cover;border-radius:16px 16px 0 0;display:block}
+.modal-body{padding:22px}
+.modal-group-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--blue);background:var(--blue-l);padding:4px 11px;border-radius:3px;margin-bottom:10px}
+.modal-teams-row{display:flex;align-items:center;gap:18px;margin:14px 0}
+.modal-team{flex:1;text-align:center}
+.modal-flag{font-size:48px}
+.modal-team-name{font-size:17px;font-weight:700;margin-top:4px}
+.modal-vs{font-size:18px;font-weight:800;color:#cbd5e1}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.info-item{background:#f8fafc;border-radius:8px;padding:13px 14px}
+.info-item .info-label{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+.info-item .info-value{font-size:15px;font-weight:600;color:var(--dark);margin-top:1px}
+.ticket-section{margin-top:22px}
+.ticket-section h4{font-size:16px;font-weight:700;margin-bottom:12px;color:#0f172a}
+.ticket-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ticket-card{background:#f8fafc;border:1px solid var(--gray-l);border-radius:8px;padding:14px 10px;text-align:center}
+.ticket-card .tier{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+.ticket-card .price{font-size:19px;font-weight:800;color:#0f172a;margin:3px 0}
+.ticket-card .price small{font-size:12px;font-weight:400;color:var(--gray)}
+.ticket-card .status{font-size:11px;color:var(--red);font-weight:500}
+.ticket-links{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.ticket-link{
+  display:inline-flex;align-items:center;gap:5px;padding:9px 16px;
+  border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;
+  transition:all .2s;border:1px solid var(--gray-l);
+}
+.ticket-link.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ticket-link.primary:hover{background:#1d4ed8}
+.ticket-link.secondary{background:var(--white);color:var(--blue);border-color:var(--blue)}
+.ticket-link.secondary:hover{background:var(--blue-l)}
+
+/* ===== 页脚 ===== */
+footer{
+  background:var(--white);border-top:1px solid var(--gray-l);
+  margin-top:60px;padding:28px 20px;text-align:center;
+  color:var(--gray);font-size:12px;position:relative;z-index:1;
+}
+
+/* ===== 响应式 ===== */
+@media(max-width:768px){
+  .hdr{flex-direction:column;gap:10px}
+  nav{gap:14px}
+  .hero{padding:36px 14px 28px}
+  .hero-trophy{font-size:56px}
+  .quick-stats{grid-template-columns:repeat(2,1fr)}
+  .matches-grid{grid-template-columns:1fr}
+  .match-flag{font-size:38px}
+  .match-name{font-size:16px}
+  .search-bar{flex-wrap:wrap}
+  .search-bar input{min-width:100%}
+  .search-bar select{flex:1}
+  .ticket-cards{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .modal-stadium-img{height:170px}
+  .modal-teams-row{gap:10px}.modal-flag{font-size:36px}
+  .cr7-deco{font-size:80px;right:5px;top:100px;opacity:.06}
+  .messi-deco{font-size:60px;right:30px;top:240px;opacity:.05}
+  .mbp-deco{font-size:70px;left:5px;bottom:40px;opacity:.06}
+  .ball-deco{font-size:50px;right:10px;bottom:60px;opacity:.05}
+  .ball2-deco{font-size:120px;opacity:.02}
+  .stars-deco{font-size:36px;right:5px;opacity:.04}
+  .trophy2-deco{font-size:120px;opacity:.02}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 背景装饰：emoji 字符 + CSS 渐变（零图片依赖，100%浏览器兼容） ========== -->
+<!-- C罗 右上角 -->
+<div class="cr7-deco">
+  <span style="display:inline-block;font-size:140px;">🧑‍💻</span>
+  <div style="font-size:15px;font-weight:900;color:#1e293b;opacity:.3;margin-top:-22px;text-align:center;letter-spacing:4px;">CR7</div>
+</div>
+<!-- 梅西 右侧中部 -->
+<div class="messi-deco">
+  <span style="display:inline-block;font-size:110px;">🧑‍💻</span>
+  <div style="font-size:13px;font-weight:900;color:#b8860b;opacity:.3;margin-top:-18px;text-align:center;letter-spacing:3px;">MESSI</div>
+</div>
+<!-- 姆巴佩 左下角 -->
+<div class="mbp-deco">
+  <span style="display:inline-block;font-size:130px;">🧑‍💻</span>
+  <div style="font-size:14px;font-weight:900;color:#1a56db;opacity:.3;margin-top:-20px;text-align:center;letter-spacing:3px;">MBAPPÉ</div>
+</div>
+<!-- 足球装饰 -->
+<div class="ball-deco">⚽</div>
+<div class="ball2-deco">⚽</div>
+<!-- 星星群 -->
+<div class="stars-deco">⭐<br>⭐<br>⭐<br>⭐<br>⭐</div>
+<!-- 底部大力神杯 -->
+<div class="trophy2-deco">🏆</div>
+
+<!-- ========== 导航栏 ========== -->
+<header>
+  <div class="hdr">
+    <a class="logo" href="#">
+      <div class="logo-i">🏆</div>
+      <div class="logo-t">2026 <span>世界杯</span></div>
+    </a>
+    <nav>
+      <a href="#countdown">倒计时</a>
+      <a href="#matches">小组赛</a>
+      <a href="#search">搜索</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ctr">
+
+  <!-- ========== 英雄区 ========== -->
+  <section class="hero" id="countdown">
+    <div class="hero-trophy">🏆</div>
+    <div class="hero-badge">FIFA World Cup 2026</div>
+    <h1>美国 · 加拿大 · 墨西哥<br><span class="gold">联合承办</span></h1>
+    <p>48 支球队 · 16 座城市 · 史上最大规模世界杯</p>
+    <div class="hero-opener">
+      <span style="font-size:24px">🇲🇽</span>
+      <span>开幕战: 墨西哥 vs 加拿大</span>
+      <span style="font-size:24px">🇨🇦</span>
+      <span style="color:var(--gold);font-weight:700">6.11</span>
+    </div>
+    <div class="countdown">
+      <div class="cd-item"><div class="cd-number" id="cd-days">--</div><div class="cd-label">天</div></div>
+      <div class="cd-item"><div class="cd-number" id="cd-hours">--</div><div class="cd-label">时</div></div>
+      <div class="cd-item"><div class="cd-number" id="cd-mins">--</div><div class="cd-label">分</div></div>
+      <div class="cd-item"><div class="cd-number" id="cd-secs">--</div><div class="cd-label">秒</div></div>
+    </div>
+  </section>
+
+  <!-- ========== 赛事速览 ========== -->
+  <div class="quick-stats">
+    <div class="quick-stat"><div class="qs-num">48</div><div class="qs-lbl">参赛球队</div></div>
+    <div class="quick-stat"><div class="qs-num">16</div><div class="qs-lbl">举办城市</div></div>
+    <div class="quick-stat"><div class="qs-num">104</div><div class="qs-lbl">总比赛场次</div></div>
+    <div class="quick-stat"><div class="qs-num">39</div><div class="qs-lbl">比赛天数</div></div>
+  </div>
+
+  <!-- ========== 小组赛对阵 ========== -->
+  <section class="section" id="matches">
+    <div class="sec-hdr">
+      <div class="sec-i">⚽</div>
+      <h2 class="sec-t">小组赛赛程</h2>
+      <span class="sec-sub">点击卡片查看场馆与票价</span>
+    </div>
+    <div class="group-tabs" id="groupTabs">
+      <button class="group-tab active" data-group="all">全部</button>
+    </div>
+    <div class="matches-grid" id="matchesGrid"></div>
+    <div class="result-count" id="resultCount"></div>
+  </section>
+
+  <!-- ========== 搜索区域 ========== -->
+  <section class="section" id="search">
+    <div class="sec-hdr">
+      <div class="sec-i">🔍</div>
+      <h2 class="sec-t">赛事搜索</h2>
+      <span class="sec-sub">按比赛地点或时间快速筛选</span>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="输入城市或日期，如「洛杉矶」「6月14」...">
+      <select id="searchType">
+        <option value="all">全部字段</option>
+        <option value="venue">比赛地点</option>
+        <option value="date">比赛时间</option>
+      </select>
+      <button id="searchBtn">🔍 搜索</button>
+      <button class="search-clear" id="searchClear" title="清除">✕</button>
+    </div>
+  </section>
+</div>
+
+<!-- ========== 模态框 ========== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-label="比赛详情">
+    <button class="modal-close" id="modalClose">✕</button>
+    <img class="modal-stadium-img" id="modalStadiumImg" src="" alt="比赛场馆">
+    <div class="modal-body">
+      <div class="modal-group-badge" id="modalGroup"></div>
+      <div class="modal-teams-row">
+        <div class="modal-team"><div class="modal-flag" id="modalFlagA"></div><div class="modal-team-name" id="modalTeamA"></div></div>
+        <div class="modal-vs">VS</div>
+        <div class="modal-team"><div class="modal-flag" id="modalFlagB"></div><div class="modal-team-name" id="modalTeamB"></div></div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">比赛时间</div><div class="info-value" id="modalDate"></div></div>
+        <div class="info-item"><div class="info-label">比赛城市</div><div class="info-value" id="modalVenue"></div></div>
+        <div class="info-item"><div class="info-label">比赛场馆</div><div class="info-value" id="modalStadium"></div></div>
+        <div class="info-item"><div class="info-label">容纳观众</div><div class="info-value" id="modalCapacity"></div></div>
+      </div>
+      <div class="ticket-section">
+        <h4>🎫 实时票价参考</h4>
+        <div class="ticket-cards">
+          <div class="ticket-card"><div class="tier">三类票</div><div class="price" id="ticketLow"></div><div class="status">少量剩余</div></div>
+          <div class="ticket-card"><div class="tier">二类票</div><div class="price" id="ticketMid"></div><div class="status">热销中</div></div>
+          <div class="ticket-card"><div class="tier">一类票</div><div class="price" id="ticketHigh"></div><div class="status">即将售罄</div></div>
+        </div>
+        <div class="ticket-links">
+          <a class="ticket-link primary" href="https://www.fifa.com/en/tickets" target="_blank" rel="noopener">🎟 FIFA 官方购票</a>
+          <a class="ticket-link secondary" href="https://www.stubhub.com" target="_blank" rel="noopener">🔄 StubHub 二手票</a>
+          <a class="ticket-link secondary" href="https://www.ticketmaster.com" target="_blank" rel="noopener">🎫 Ticketmaster</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>FIFA World Cup 2026 · 票务链接跳转至官方及授权平台 · 数据仅供参考</footer>
+
+
+<!-- ============================================================
+     JavaScript 数据 + 渲染
+     ============================================================ -->
+<script>
+(function(){
+/* ── 球队国旗颜色（真实国旗色） ── */
+var FLAG_COLORS = {
+  "墨西哥":     ["#006847","#ffffff","#ce1126"],
+  "加拿大":     ["#ff0000","#ffffff","#ff0000"],
+  "法国":       ["#002395","#ffffff","#ed2939"],
+  "美国":       ["#b22234","#ffffff","#3c3b6e"],
+  "英格兰":     ["#ce1126","#ffffff","#ce1126"],
+  "阿根廷":     ["#75aadb","#ffffff","#75aadb"],
+  "西班牙":     ["#aa151b","#f1bf00","#aa151b"],
+  "巴西":       ["#009c3b","#ffdf00","#002776"],
+  "德国":       ["#000000","#dd0000","#ffcc00"],
+  "意大利":     ["#009246","#ffffff","#ce2b37"],
+  "荷兰":       ["#ff6600","#ffffff","#21468b"],
+  "葡萄牙":     ["#006600","#ff0000","#006600"],
+  "乌拉圭":     ["#0038a8","#ffffff","#0038a8"],
+  "待定A2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定B2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定B3":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定C2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定C3":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定D2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定D3":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定E2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定E3":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定F2":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+  "待定F3":     ["#cbd5e1","#e2e8f0","#cbd5e1"],
+};
+
+var GROUP_COLORS = {"A":"#2563eb","B":"#dc2626","C":"#16a34a","D":"#ca8a04","E":"#9333ea","F":"#ea580c"};
+
+var VENUES = {
+  "洛杉矶":      {stadium:"SoFi Stadium",         capacity:70000, img:"https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80"},
+  "纽约":        {stadium:"MetLife Stadium",      capacity:82500, img:"https://images.unsplash.com/photo-1587327901816-91f59b9f3c94?w=800&q=80"},
+  "达拉斯":      {stadium:"AT&T Stadium",         capacity:80000, img:"https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&q=80"},
+  "迈阿密":      {stadium:"Hard Rock Stadium",    capacity:65326, img:"https://images.unsplash.com/photo-1575361204480-aadea25c4f74?w=800&q=80"},
+  "墨西哥城":    {stadium:"Estadio Azteca",       capacity:87523, img:"https://images.unsplash.com/photo-1580587771525-78b9a4e4e79e?w=800&q=80"},
+  "休斯顿":      {stadium:"NRG Stadium",          capacity:72220, img:"https://images.unsplash.com/photo-1569517282132-25d22f4573b5?w=800&q=80"},
+  "亚特兰大":    {stadium:"Mercedes-Benz Stadium",capacity:71000, img:"https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&q=80"},
+  "旧金山":      {stadium:"Levi's Stadium",       capacity:68500, img:"https://images.unsplash.com/photo-1502916546581-7ca0a8fb15c4?w=800&q=80"},
+  "西雅图":      {stadium:"Lumen Field",          capacity:68740, img:"https://images.unsplash.com/photo-1540747913343-19e32dc3be4b?w=800&q=80"},
+  "多伦多":      {stadium:"BMO Field",            capacity:45000, img:"https://images.unsplash.com/photo-1474309222785-112a1d068e4d?w=800&q=80"},
+  "温哥华":      {stadium:"BC Place",             capacity:54320, img:"https://images.unsplash.com/photo-1516495754120-faa2c877b0e9?w=800&q=80"},
+  "堪萨斯城":    {stadium:"Arrowhead Stadium",    capacity:76416, img:"https://images.unsplash.com/photo-1560089000-7433a4ebbd64?w=800&q=80"},
+  "波士顿":      {stadium:"Gillette Stadium",     capacity:65878, img:"https://images.unsplash.com/photo-1445906700110-11eb08cdff94?w=800&q=80"},
+  "费城":        {stadium:"Lincoln Financial Field",capacity:67594,img:"https://images.unsplash.com/photo-1545156521-77bd85671d30?w=800&q=80"},
+  "蒙特雷":      {stadium:"Estadio BBVA",         capacity:53500, img:"https://images.unsplash.com/photo-1576671081867-5e1e78b3484c?w=800&q=80"},
+  "瓜达拉哈拉":  {stadium:"Estadio Akron",        capacity:48071, img:"https://images.unsplash.com/photo-1459865264687-595d6f08b1dc?w=800&q=80"},
+};
+
+var MATCHES = [
+  {group:"A",date:"2026-06-11",time:"20:00",city:"墨西哥城",    ta:"墨西哥",     fa:"🇲🇽", tb:"加拿大",     fb:"🇨🇦"},
+  {group:"A",date:"2026-06-12",time:"16:00",city:"洛杉矶",      ta:"法国",       fa:"🇫🇷", tb:"待定A2",     fb:"🏳️"},
+  {group:"A",date:"2026-06-16",time:"15:00",city:"休斯顿",      ta:"墨西哥",     fa:"🇲🇽", tb:"待定A2",     fb:"🏳️"},
+  {group:"A",date:"2026-06-17",time:"13:00",city:"多伦多",      ta:"加拿大",     fa:"🇨🇦", tb:"法国",       fb:"🇫🇷"},
+  {group:"A",date:"2026-06-21",time:"19:00",city:"亚特兰大",    ta:"法国",       fa:"🇫🇷", tb:"墨西哥",     fb:"🇲🇽"},
+  {group:"A",date:"2026-06-21",time:"19:00",city:"温哥华",      ta:"加拿大",     fa:"🇨🇦", tb:"待定A2",     fb:"🏳️"},
+  {group:"B",date:"2026-06-12",time:"20:00",city:"纽约",        ta:"美国",       fa:"🇺🇸", tb:"待定B2",     fb:"🏳️"},
+  {group:"B",date:"2026-06-13",time:"13:00",city:"达拉斯",      ta:"英格兰",     fa:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", tb:"待定B3",     fb:"🏳️"},
+  {group:"B",date:"2026-06-17",time:"16:00",city:"旧金山",      ta:"美国",       fa:"🇺🇸", tb:"待定B3",     fb:"🏳️"},
+  {group:"B",date:"2026-06-18",time:"20:00",city:"纽约",        ta:"英格兰",     fa:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", tb:"待定B2",     fb:"🏳️"},
+  {group:"B",date:"2026-06-21",time:"16:00",city:"达拉斯",      ta:"待定B2",     fa:"🏳️", tb:"待定B3",     fb:"🏳️"},
+  {group:"B",date:"2026-06-22",time:"13:00",city:"洛杉矶",      ta:"美国",       fa:"🇺🇸", tb:"英格兰",     fb:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+  {group:"C",date:"2026-06-13",time:"16:00",city:"迈阿密",      ta:"阿根廷",     fa:"🇦🇷", tb:"待定C2",     fb:"🏳️"},
+  {group:"C",date:"2026-06-13",time:"20:00",city:"休斯顿",      ta:"西班牙",     fa:"🇪🇸", tb:"待定C3",     fb:"🏳️"},
+  {group:"C",date:"2026-06-18",time:"15:00",city:"迈阿密",      ta:"阿根廷",     fa:"🇦🇷", tb:"待定C3",     fb:"🏳️"},
+  {group:"C",date:"2026-06-18",time:"19:00",city:"达拉斯",      ta:"西班牙",     fa:"🇪🇸", tb:"待定C2",     fb:"🏳️"},
+  {group:"C",date:"2026-06-22",time:"20:00",city:"纽约",        ta:"阿根廷",     fa:"🇦🇷", tb:"西班牙",     fb:"🇪🇸"},
+  {group:"C",date:"2026-06-22",time:"20:00",city:"休斯顿",      ta:"待定C2",     fa:"🏳️", tb:"待定C3",     fb:"🏳️"},
+  {group:"D",date:"2026-06-14",time:"13:00",city:"西雅图",      ta:"巴西",       fa:"🇧🇷", tb:"待定D2",     fb:"🏳️"},
+  {group:"D",date:"2026-06-14",time:"17:00",city:"旧金山",      ta:"德国",       fa:"🇩🇪", tb:"待定D3",     fb:"🏳️"},
+  {group:"D",date:"2026-06-19",time:"13:00",city:"西雅图",      ta:"巴西",       fa:"🇧🇷", tb:"待定D3",     fb:"🏳️"},
+  {group:"D",date:"2026-06-19",time:"17:00",city:"温哥华",      ta:"德国",       fa:"🇩🇪", tb:"待定D2",     fb:"🏳️"},
+  {group:"D",date:"2026-06-23",time:"16:00",city:"旧金山",      ta:"巴西",       fa:"🇧🇷", tb:"德国",       fb:"🇩🇪"},
+  {group:"E",date:"2026-06-14",time:"20:00",city:"费城",        ta:"意大利",     fa:"🇮🇹", tb:"待定E2",     fb:"🏳️"},
+  {group:"E",date:"2026-06-15",time:"13:00",city:"堪萨斯城",    ta:"荷兰",       fa:"🇳🇱", tb:"待定E3",     fb:"🏳️"},
+  {group:"E",date:"2026-06-19",time:"20:00",city:"费城",        ta:"意大利",     fa:"🇮🇹", tb:"待定E3",     fb:"🏳️"},
+  {group:"E",date:"2026-06-20",time:"13:00",city:"堪萨斯城",    ta:"荷兰",       fa:"🇳🇱", tb:"待定E2",     fb:"🏳️"},
+  {group:"E",date:"2026-06-23",time:"13:00",city:"波士顿",      ta:"意大利",     fa:"🇮🇹", tb:"荷兰",       fb:"🇳🇱"},
+  {group:"F",date:"2026-06-15",time:"17:00",city:"蒙特雷",      ta:"葡萄牙",     fa:"🇵🇹", tb:"待定F2",     fb:"🏳️"},
+  {group:"F",date:"2026-06-15",time:"21:00",city:"迈阿密",      ta:"乌拉圭",     fa:"🇺🇾", tb:"待定F3",     fb:"🏳️"},
+  {group:"F",date:"2026-06-20",time:"17:00",city:"蒙特雷",      ta:"葡萄牙",     fa:"🇵🇹", tb:"待定F3",     fb:"🏳️"},
+  {group:"F",date:"2026-06-20",time:"21:00",city:"波士顿",      ta:"乌拉圭",     fa:"🇺🇾", tb:"待定F2",     fb:"🏳️"},
+  {group:"F",date:"2026-06-24",time:"15:00",city:"迈阿密",      ta:"葡萄牙",     fa:"🇵🇹", tb:"乌拉圭",     fb:"🇺🇾"},
+];
+
+var GROUPS = ["A","B","C","D","E","F"];
+
+/* ── 倒计时 ── */
+var KICKOFF = new Date("2026-06-11T20:00:00-06:00");
+(function tick(){
+  var d=KICKOFF-Date.now();
+  var elD=document.getElementById("cd-days"), elH=document.getElementById("cd-hours"),
+      elM=document.getElementById("cd-mins"), elS=document.getElementById("cd-secs");
+  if(d<=0){elD.textContent="开";elH.textContent="赛";elM.textContent="啦";elS.textContent="🎉";return}
+  var s=Math.floor(d/1000),m=Math.floor(s/60),h=Math.floor(m/60);
+  elD.textContent=Math.floor(h/24);elH.textContent=h%24;elM.textContent=m%60;elS.textContent=s%60;
+  setTimeout(tick,1000);
+})();
+
+/* ── 小组筛选标签 ── */
+var tabsC=document.getElementById("groupTabs");
+GROUPS.forEach(function(g){
+  var b=document.createElement("button");
+  b.className="group-tab";b.dataset.group=g;b.textContent=g+" 组";
+  tabsC.appendChild(b);
+});
+
+/* ── 构建单个球队盒子 HTML（国旗色背景 60% 不透明度）── */
+function buildTeamBox(name,flag,colors){
+  return(
+    '<div class="match-team-box" style="background:linear-gradient(135deg,'+colors[0]+'99,'+colors[1]+'99,'+colors[2]+'99)">'+
+      '<div class="match-flag">'+flag+'</div>'+
+      '<div class="match-name">'+name+'</div>'+
+      '<div class="match-flag-bar" style="background:linear-gradient(to right,'+colors[0]+' 33%,'+colors[1]+' 33%,'+colors[1]+' 66%,'+colors[2]+' 66%)"></div>'+
+    '</div>'
+  );
+}
+
+/* ── 渲染对阵卡片 ── */
+var grid=document.getElementById("matchesGrid");
+function renderMatches(filterGroup){
+  grid.innerHTML="";
+  MATCHES.forEach(function(m,i){
+    if(filterGroup&&filterGroup!="all"&&m.group!==filterGroup)return;
+    var v=VENUES[m.city]||{stadium:m.city+" Stadium"};
+    var gClr=GROUP_COLORS[m.group]||"#2563eb";
+    var ca=FLAG_COLORS[m.ta]||["#cbd5e1","#e2e8f0","#cbd5e1"];
+    var cb=FLAG_COLORS[m.tb]||["#cbd5e1","#e2e8f0","#cbd5e1"];
+
+    var card=document.createElement("div");
+    card.className="match-card";
+    card.dataset.group=m.group;card.dataset.city=m.city;card.dataset.date=m.date;card.dataset.index=i;
+
+    card.innerHTML=
+      '<div class="match-card-bar" style="background:linear-gradient(90deg,'+ca[0]+','+ca[1]+','+ca[2]+','+cb[0]+','+cb[1]+','+cb[2]+')"></div>'+
+      '<div class="match-card-body">'+
+        '<div class="match-group-badge" style="background:'+gClr+'">'+m.group+' 组</div>'+
+        '<div class="match-teams-row">'+
+          buildTeamBox(m.ta,m.fa,ca)+
+          '<div class="match-vs">VS</div>'+
+          buildTeamBox(m.tb,m.fb,cb)+
+        '</div>'+
+        '<div class="match-meta">'+
+          '<div class="match-meta-item">📅 '+m.date+' '+m.time+'</div>'+
+          '<div class="match-meta-item">📍 '+m.city+'</div>'+
+          '<div class="match-meta-item">🏟 '+v.stadium+'</div>'+
+        '</div>'+
+        '<button class="match-btn" data-index="'+i+'">查看详情 & 购票 →</button>'+
+      '</div>';
+
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll(".match-btn").forEach(function(btn){
+    btn.addEventListener("click",function(e){e.stopPropagation();openDetail(parseInt(this.dataset.index));});
+  });
+}
+
+/* ── 分组切换 ── */
+tabsC.addEventListener("click",function(e){
+  var t=e.target.closest(".group-tab");if(!t)return;
+  this.querySelectorAll(".group-tab").forEach(function(x){x.classList.remove("active");});
+  t.classList.add("active");
+  renderMatches(t.dataset.group);
+  var q=document.getElementById("searchInput").value.trim();
+  if(q)applySearch(q);
+});
+
+/* ── 搜索 ── */
+function applySearch(query){
+  query=query.toLowerCase();
+  var type=document.getElementById("searchType").value;
+  var cards=grid.querySelectorAll(".match-card");
+  var visible=0;
+  cards.forEach(function(c){
+    var city=(c.dataset.city||"").toLowerCase();
+    var date=(c.dataset.date||"").toLowerCase();
+    var hit=type==="venue"?city.includes(query):type==="date"?date.includes(query):city.includes(query)||date.includes(query);
+    if(hit){c.classList.remove("hidden");visible++}else{c.classList.add("hidden")}
+  });
+  var cnt=document.getElementById("resultCount");
+  if(query){cnt.textContent="找到 "+visible+" 场比赛";cnt.classList.add("show")}else{cnt.classList.remove("show")}
+}
+document.getElementById("searchBtn").addEventListener("click",function(){applySearch(document.getElementById("searchInput").value.trim())});
+document.getElementById("searchInput").addEventListener("keydown",function(e){if(e.key==="Enter")applySearch(this.value.trim())});
+document.getElementById("searchClear").addEventListener("click",function(){
+  document.getElementById("searchInput").value="";applySearch("");
+  var a=document.querySelector(".group-tab.active");
+  renderMatches(a?a.dataset.group:"all");
+});
+
+/* ── 模态框（含场馆图片加载失败兜底）── */
+var overlay=document.getElementById("modalOverlay");
+function openDetail(idx){
+  var m=MATCHES[idx];
+  var v=VENUES[m.city]||{stadium:m.city+" Stadium",capacity:"待定",img:"https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80"};
+  document.getElementById("modalGroup").textContent=m.group+" 组";
+  document.getElementById("modalFlagA").textContent=m.fa;
+  document.getElementById("modalTeamA").textContent=m.ta;
+  document.getElementById("modalFlagB").textContent=m.fb;
+  document.getElementById("modalTeamB").textContent=m.tb;
+  document.getElementById("modalDate").textContent=m.date+" "+m.time;
+  document.getElementById("modalVenue").textContent=m.city;
+  document.getElementById("modalStadium").textContent=v.stadium;
+  document.getElementById("modalCapacity").textContent=(v.capacity||"待定").toLocaleString()+" 人";
+
+  var imgEl=document.getElementById("modalStadiumImg");
+  imgEl.src=v.img;
+  imgEl.alt=v.stadium;
+  imgEl.style.display="";
+  var fb=document.getElementById("stadiumFallback");
+  if(fb) fb.style.display="none";
+
+  imgEl.onerror=function(){
+    this.style.display="none";
+    var fallback=document.getElementById("stadiumFallback");
+    if(!fallback){
+      fallback=document.createElement("div");
+      fallback.id="stadiumFallback";
+      fallback.style.cssText="width:100%;height:230px;background:linear-gradient(135deg,#0f2340 0%,#1a3a5c 50%,#0f2340 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:16px 16px 0 0;color:#c8a84e;gap:10px;";
+      fallback.innerHTML='<div style="font-size:56px">🏟</div><div style="font-size:15px;color:#94a3b8;font-weight:600">'+v.stadium+'</div><div style="font-size:11px;color:#64748b">场馆图片加载中…</div>';
+      this.parentNode.insertBefore(fallback,this);
+    }
+    fallback.style.display="flex";
+  };
+
+  var base=200+(idx%5)*35;
+  document.getElementById("ticketLow").innerHTML="$"+base+' <small>USD</small>';
+  document.getElementById("ticketMid").innerHTML="$"+(base+150)+' <small>USD</small>';
+  document.getElementById("ticketHigh").innerHTML="$"+(base+380)+' <small>USD</small>';
+  overlay.classList.add("open");document.body.style.overflow="hidden";
+}
+function closeModal(){overlay.classList.remove("open");document.body.style.overflow="";}
+document.getElementById("modalClose").addEventListener("click",closeModal);
+overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal()});
+document.addEventListener("keydown",function(e){if(e.key=="Escape")closeModal()});
+
+/* ── 启动 ── */
+renderMatches("all");
+})();
+</script>
+</body>
+</html>
